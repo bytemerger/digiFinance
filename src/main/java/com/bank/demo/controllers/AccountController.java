@@ -1,9 +1,9 @@
 package com.bank.demo.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.bank.demo.dto.CreateRequest;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 public class AccountController {
@@ -16,8 +16,8 @@ public class AccountController {
         return "hello world";
     }
     @PostMapping("/create_account")
-    public String create(){
-        return "hello world";
+    public String create(@Valid @RequestBody CreateRequest request){
+        return request.getAccountName();
     }
     @PostMapping("/login")
     public String login(){
