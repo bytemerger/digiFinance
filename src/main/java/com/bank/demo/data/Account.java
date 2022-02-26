@@ -1,7 +1,5 @@
 package com.bank.demo.data;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

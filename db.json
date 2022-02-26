@@ -3,7 +3,7 @@
     "283878764" : {
       "accountName" : "New checking",
       "accountNumber" : "283878764",
-      "balance" : 700.0,
+      "balance" : 3400.0,
       "password" : "$2a$10$opRXTZZfTKHgXr2wdbHe6.mmGdFBnfFymwDk0jiiGgZA4tAjlqcCe"
     },
     "220532632" : {
@@ -21,8 +21,34 @@
     "6513138112" : {
       "accountName" : "New amadi",
       "accountNumber" : "6513138112",
-      "balance" : 800.0,
+      "balance" : 1800.0,
       "password" : "$2a$10$Jqh6rXBNfVKccGD7oA1Rl.PqiUdhcYND3Z7L6D5L5TTqLj9B5SEvy"
+    }
+  },
+  "transactions" : {
+    "283878764" : {
+      "list" : [ {
+        "transactionDate" : "2022-02-26T21:47:20.799158",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 900.0,
+        "balanceAfterTran" : 3400.0
+      } ]
+    },
+    "6513138112" : {
+      "list" : [ {
+        "transactionDate" : "2022-02-26T22:08:08.063376",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 900.0,
+        "balanceAfterTran" : 1700.0
+      }, {
+        "transactionDate" : "2022-02-26T22:16:39.848951",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 100.0,
+        "balanceAfterTran" : 1800.0
+      } ]
     }
   }
 }
