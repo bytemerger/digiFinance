@@ -10,6 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,11 +24,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 @Service
 public class AccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public Account getAccount(String accountNo) throws IOException {
+        String data = this.readData();
+        if(data.isEmpty()){
+            throw new ResponseStatusException(NOT_FOUND, "Account Files are not Registered");
+        }
+        Map<String, Map<String, Object>> map = this.convertToMap(data);
+        Map<String, Object> account = map.get("accounts");
+        if(account.containsKey(accountNo)){
+            Object acc = account.get(accountNo);
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.convertValue(acc, Account.class);
+        }
+        throw new ResponseStatusException(NOT_FOUND, "Account not found");
+    }
     public boolean createAccount(CreateRequest request){
         request.setAccountPassword(passwordEncoder.encode(request.getAccountPassword()));
         String accountNo = generateRandomNumbers(10);
