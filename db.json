@@ -1,0 +1,28 @@
+{
+  "accounts" : {
+    "283878764" : {
+      "accountName" : "New checking",
+      "accountNumber" : "283878764",
+      "balance" : 700.0,
+      "password" : "$2a$10$opRXTZZfTKHgXr2wdbHe6.mmGdFBnfFymwDk0jiiGgZA4tAjlqcCe"
+    },
+    "220532632" : {
+      "accountName" : "New Demo",
+      "accountNumber" : "220532632",
+      "balance" : 800.0,
+      "password" : "$2a$10$fRCWkia0BuN7Mkeq0T6XKujK5.wwlXAtR06XxIBCSQ/Qz.6TAFWOS"
+    },
+    "504643124" : {
+      "accountName" : "New Demo",
+      "accountNumber" : "504643124",
+      "balance" : 800.0,
+      "password" : "$2a$10$wISLCzbQE.dU2b7yvrG89e2fH5I9aLOyHFw9MMqE9OLECoxmFHaA2"
+    },
+    "6513138112" : {
+      "accountName" : "New amadi",
+      "accountNumber" : "6513138112",
+      "balance" : 800.0,
+      "password" : "$2a$10$Jqh6rXBNfVKccGD7oA1Rl.PqiUdhcYND3Z7L6D5L5TTqLj9B5SEvy"
+    }
+  }
+}
