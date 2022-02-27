@@ -6,18 +6,12 @@ import com.bank.demo.data.TransactionList;
 import com.bank.demo.dto.DepositRequest;
 import com.bank.demo.dto.TransactionRequest;
 import com.bank.demo.dto.WithdrawRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;

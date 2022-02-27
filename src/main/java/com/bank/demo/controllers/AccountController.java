@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 public class AccountController {
