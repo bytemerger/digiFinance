@@ -2,6 +2,7 @@ package com.bank.demo.controllers;
 
 import com.bank.demo.dto.CustomResponse;
 import com.bank.demo.dto.DepositRequest;
+import com.bank.demo.dto.WithdrawRequest;
 import com.bank.demo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,12 @@ public class TransactionController {
         }
     }
     @PostMapping("/withdrawal")
-    public String withdraw(){
-        return "hello world";
+    public ResponseEntity<CustomResponse> withdraw(@Valid @RequestBody WithdrawRequest request){
+        try {
+            boolean result = transactionService.withdrawCash(request);
+            return new ResponseEntity<>(new CustomResponse(200, true, "successful"), HttpStatus.valueOf(200));
+        }catch (IOException ex){
+            return new ResponseEntity<>(new CustomResponse(500, false, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

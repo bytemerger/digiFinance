@@ -21,7 +21,7 @@
     "6513138112" : {
       "accountName" : "New amadi",
       "accountNumber" : "6513138112",
-      "balance" : 1800.0,
+      "balance" : 1700.0,
       "password" : "$2a$10$Jqh6rXBNfVKccGD7oA1Rl.PqiUdhcYND3Z7L6D5L5TTqLj9B5SEvy"
     }
   },
@@ -48,6 +48,42 @@
         "narration" : "",
         "amount" : 100.0,
         "balanceAfterTran" : 1800.0
+      }, {
+        "transactionDate" : "2022-02-27T10:03:39.911824",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 100.0,
+        "balanceAfterTran" : 1700.0
+      }, {
+        "transactionDate" : "2022-02-27T10:05:49.277863",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 100.0,
+        "balanceAfterTran" : 1600.0
+      }, {
+        "transactionDate" : "2022-02-27T10:06:33.416945",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 200.0,
+        "balanceAfterTran" : 1800.0
+      }, {
+        "transactionDate" : "2022-02-27T10:07:43.633582",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 100.0,
+        "balanceAfterTran" : 1900.0
+      }, {
+        "transactionDate" : "2022-02-27T10:11:25.990325",
+        "transactionType" : "Deposit",
+        "narration" : "",
+        "amount" : 100.0,
+        "balanceAfterTran" : 1800.0
+      }, {
+        "transactionDate" : "2022-02-27T10:12:00.294652",
+        "transactionType" : "withdrawal",
+        "narration" : "",
+        "amount" : 100.0,
+        "balanceAfterTran" : 1700.0
       } ]
     }
   }

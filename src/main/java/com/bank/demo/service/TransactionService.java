@@ -4,9 +4,13 @@ import com.bank.demo.data.Account;
 import com.bank.demo.data.Transaction;
 import com.bank.demo.data.TransactionList;
 import com.bank.demo.dto.DepositRequest;
+import com.bank.demo.dto.TransactionRequest;
+import com.bank.demo.dto.WithdrawRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.catalina.Store;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,70 +24,68 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class TransactionService {
+    @Autowired
+    private StoreService storeService;
+
+    public enum TransactionType {
+        DEPOSIT,
+        WITHDRAW;
+    }
+
     public boolean depositCash(DepositRequest depositRequest) throws IOException {
-        String db = this.readData();
-        Map<String, Map<String, Object>> map = this.convertToMap(db);
+        return transactCash(depositRequest,TransactionType.DEPOSIT);
+    }
+    public boolean withdrawCash(WithdrawRequest withdrawRequest) throws IOException {
+        return transactCash(withdrawRequest,TransactionType.WITHDRAW);
+    }
+    private <T extends TransactionRequest> boolean transactCash(T depositRequest, TransactionType transactionType) throws IOException {
+        String db = storeService.readData();
+        Map<String, Map<String, Object>> map = storeService.convertToMap(db);
         Map<String, Object> accounts = map.get("accounts");
         if(accounts.containsKey(depositRequest.getAccountNumber())){
             ObjectMapper mapper = new ObjectMapper();
             Account acc = mapper.convertValue(accounts.get(depositRequest.getAccountNumber()), Account.class);
-            double transaction = acc.getBalance() + depositRequest.getAmount();
-            acc.setBalance(transaction);
+            double newAmount;
+            if(transactionType == TransactionType.WITHDRAW){
+                if((acc.getBalance() - depositRequest.getAmount()) < 500){
+                    throw new ResponseStatusException(BAD_REQUEST, "Account Balance cannot be less than 500");
+                }
+                newAmount = acc.getBalance() - depositRequest.getAmount();
+            }else{
+                newAmount = acc.getBalance() + depositRequest.getAmount();
+            }
+            acc.setBalance(newAmount);
             accounts.replace(depositRequest.getAccountNumber(), acc);
-            Transaction transaction1 = new Transaction(LocalDateTime.now().toString(),"Deposit","",depositRequest.getAmount(),transaction);
+            String transactType = transactionType == TransactionType.WITHDRAW ? "withdrawal" : "deposit";
+            Transaction transaction = new Transaction(LocalDateTime.now().toString(),transactType,"",depositRequest.getAmount(),newAmount);
             if(map.containsKey("transactions")){
                 Map<String, Object> transactions = map.get("transactions");
-                //ObjectMapper mapper = new ObjectMapper();
                 if(transactions.containsKey(depositRequest.getAccountNumber())){
                     TransactionList list = mapper.convertValue(transactions.get(depositRequest.getAccountNumber()), TransactionList.class);
-                    list.addToList(transaction1);
+                    list.addToList(transaction);
                     map.get("transactions").put(depositRequest.getAccountNumber(),list);
-                    this.writeData(map);
+                    storeService.writeData(map);
                     return true;
                 }
-                List<Transaction> transactionLis = new ArrayList<>();
-                transactionLis.add(transaction1);
-                map.get("transactions").put(depositRequest.getAccountNumber(), new TransactionList(transactionLis));
-                this.writeData(map);
+                List<Transaction> transactionList = new ArrayList<>();
+                transactionList.add(transaction);
+                map.get("transactions").put(depositRequest.getAccountNumber(), new TransactionList(transactionList));
+                storeService.writeData(map);
                 return true;
             }
-            /*map.put("transactions",new HashMap<>(){{
-                put(depositRequest.getAccountNumber(), transaction1);
-            }});*/
             List<Transaction> transactionList = new ArrayList<>();
-            transactionList.add(transaction1);
+            transactionList.add(transaction);
             map.put("transactions",new HashMap<>(){{
                 put(depositRequest.getAccountNumber(), new TransactionList(transactionList));
             }});
-            this.writeData(map);
+            storeService.writeData(map);
             return true;
         }
         throw new ResponseStatusException(NOT_FOUND, "Account not found");
-    }
-    private String readData() throws IOException {
-        File file = new File("db.json");
-        if(file.exists()){
-            return new String(Files.readAllBytes(file.toPath()));
-        }
-        file.createNewFile();
-        return "";
-    }
-    private Map<String, Map<String, Object>> convertToMap(String data ) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        TypeReference<Map<String, Map<String, Object>>> typeRef
-                = new TypeReference<Map<String, Map<String, Object>>>() {};
-        return mapper.readValue(data, typeRef);
-    }
-    private void writeData(Map<String, Map<String, Object>> db) throws IOException{
-        ObjectMapper mapper = new ObjectMapper();
-        String data = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(db);
-        File file = new File("db.json");
-        FileWriter fileWriter = new FileWriter(String.valueOf(file.toPath()));
-        fileWriter.write(data);
-        fileWriter.close();
     }
 }
