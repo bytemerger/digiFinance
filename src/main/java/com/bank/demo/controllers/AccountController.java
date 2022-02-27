@@ -1,10 +1,12 @@
 package com.bank.demo.controllers;
 
 import com.bank.demo.data.Account;
+import com.bank.demo.data.Transaction;
 import com.bank.demo.dto.CreateRequest;
 import com.bank.demo.dto.CustomResponse;
 import com.bank.demo.dto.CustomResponseWithData;
 import com.bank.demo.service.AccountService;
+import com.bank.demo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +14,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class AccountController {
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @GetMapping("/account_info/{account_number}")
     public ResponseEntity<?> getAccountNumber(@PathVariable String account_number){
@@ -28,8 +34,8 @@ public class AccountController {
         }
     }
     @GetMapping("/account_statement/{account_number}")
-    public String getAccountStatement(@PathVariable String account_number){
-        return "hello world";
+    public ResponseEntity<List<Transaction>> getAccountStatement(@PathVariable String account_number) throws IOException {
+        return new ResponseEntity<>(transactionService.getAccountStatement(account_number), HttpStatus.OK);
     }
     @PostMapping("/create_account")
     public ResponseEntity<CustomResponse> create(@Valid @RequestBody CreateRequest request){

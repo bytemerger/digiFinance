@@ -32,37 +32,39 @@ public class TransactionService {
     }
 
     public boolean depositCash(DepositRequest depositRequest) throws IOException {
-        return transactCash(depositRequest,TransactionType.DEPOSIT);
+        return transactCash(depositRequest, TransactionType.DEPOSIT);
     }
+
     public boolean withdrawCash(WithdrawRequest withdrawRequest) throws IOException {
-        return transactCash(withdrawRequest,TransactionType.WITHDRAW);
+        return transactCash(withdrawRequest, TransactionType.WITHDRAW);
     }
+
     private <T extends TransactionRequest> boolean transactCash(T depositRequest, TransactionType transactionType) throws IOException {
         String db = storeService.readData();
         Map<String, Map<String, Object>> map = storeService.convertToMap(db);
         Map<String, Object> accounts = map.get("accounts");
-        if(accounts.containsKey(depositRequest.getAccountNumber())){
+        if (accounts.containsKey(depositRequest.getAccountNumber())) {
             ObjectMapper mapper = new ObjectMapper();
             Account acc = mapper.convertValue(accounts.get(depositRequest.getAccountNumber()), Account.class);
             double newAmount;
-            if(transactionType == TransactionType.WITHDRAW){
-                if((acc.getBalance() - depositRequest.getAmount()) < 500){
+            if (transactionType == TransactionType.WITHDRAW) {
+                if ((acc.getBalance() - depositRequest.getAmount()) < 500) {
                     throw new ResponseStatusException(BAD_REQUEST, "Account Balance cannot be less than 500");
                 }
                 newAmount = acc.getBalance() - depositRequest.getAmount();
-            }else{
+            } else {
                 newAmount = acc.getBalance() + depositRequest.getAmount();
             }
             acc.setBalance(newAmount);
             accounts.replace(depositRequest.getAccountNumber(), acc);
             String transactType = transactionType == TransactionType.WITHDRAW ? "withdrawal" : "deposit";
-            Transaction transaction = new Transaction(LocalDateTime.now().toString(),transactType,"",depositRequest.getAmount(),newAmount);
-            if(map.containsKey("transactions")){
+            Transaction transaction = new Transaction(LocalDateTime.now().toString(), transactType, "", depositRequest.getAmount(), newAmount);
+            if (map.containsKey("transactions")) {
                 Map<String, Object> transactions = map.get("transactions");
-                if(transactions.containsKey(depositRequest.getAccountNumber())){
+                if (transactions.containsKey(depositRequest.getAccountNumber())) {
                     TransactionList list = mapper.convertValue(transactions.get(depositRequest.getAccountNumber()), TransactionList.class);
                     list.addToList(transaction);
-                    map.get("transactions").put(depositRequest.getAccountNumber(),list);
+                    map.get("transactions").put(depositRequest.getAccountNumber(), list);
                     storeService.writeData(map);
                     return true;
                 }
@@ -74,12 +76,24 @@ public class TransactionService {
             }
             List<Transaction> transactionList = new ArrayList<>();
             transactionList.add(transaction);
-            map.put("transactions",new HashMap<>(){{
+            map.put("transactions", new HashMap<>() {{
                 put(depositRequest.getAccountNumber(), new TransactionList(transactionList));
             }});
             storeService.writeData(map);
             return true;
         }
         throw new ResponseStatusException(NOT_FOUND, "Account not found");
+    }
+
+    public List<Transaction> getAccountStatement(String accountNumber) throws IOException {
+        String db = storeService.readData();
+        Map<String, Map<String, Object>> dbMap = storeService.convertToMap(db);
+        Map<String, Object> transactions = dbMap.get("transactions");
+        if (transactions.containsKey(accountNumber)) {
+            ObjectMapper mapper = new ObjectMapper();
+            TransactionList transactionList = mapper.convertValue(transactions.get(accountNumber), TransactionList.class);
+            return transactionList.getList();
+        }
+        throw new ResponseStatusException(NOT_FOUND, "Account " + accountNumber + " does not have any transactions");
     }
 }
