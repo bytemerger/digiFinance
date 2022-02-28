@@ -1,9 +1,15 @@
 package com.bank.demo.service;
 
+import com.bank.demo.auth.JWTUtils;
 import com.bank.demo.data.Account;
 import com.bank.demo.dto.CreateRequest;
+import com.bank.demo.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,14 +20,23 @@ import java.util.Map;
 import java.util.Random;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Service
 public class AccountService {
+    @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private StoreService storeService;
+
+    @Lazy
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JWTUtils jwtUtils;
 
     public Account getAccount(String accountNo) throws IOException {
         String data = storeService.readData();
@@ -68,5 +83,19 @@ public class AccountService {
             string.append(x);
         }
         return string.toString();
+    }
+    public String loginAccount(LoginRequest request) throws IOException {
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getAccountNumber(),request.getAccountPassword()));
+        }catch (BadCredentialsException ex){
+            throw new ResponseStatusException(UNAUTHORIZED,ex.getMessage());
+        }
+        Account account = getAccount(request.getAccountNumber());
+        Map<String, String> claims = new HashMap<>(){{
+            put("accountName",account.getAccountName());
+            put("enabled","true");
+        }};
+        String token = jwtUtils.createToken(account.getAccountNumber(), claims);
+        return token;
     }
 }

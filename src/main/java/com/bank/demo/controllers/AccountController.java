@@ -5,18 +5,22 @@ import com.bank.demo.data.Transaction;
 import com.bank.demo.dto.CreateRequest;
 import com.bank.demo.dto.CustomResponse;
 import com.bank.demo.dto.CustomResponseWithData;
+import com.bank.demo.dto.LoginRequest;
 import com.bank.demo.service.AccountService;
 import com.bank.demo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1")
 public class AccountController {
     @Autowired
     private AccountService accountService;
@@ -43,7 +47,15 @@ public class AccountController {
         return new ResponseEntity<>(new CustomResponse(200,result,"successfully created"), HttpStatus.OK);
     }
     @PostMapping("/login")
-    public String login(){
-        return "hello world";
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) throws IOException {
+        try {
+            String result = accountService.loginAccount(request);
+            return new ResponseEntity<>(new HashMap<>(){{
+                put("success",true);
+                put("token",result);
+            }},HttpStatus.OK);
+        } catch (ResponseStatusException ex){
+            return new ResponseEntity<>(new CustomResponse(ex.getStatus().value(), false, ex.getMessage()), ex.getStatus());
+        }
     }
 }
