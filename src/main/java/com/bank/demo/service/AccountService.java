@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -37,6 +38,26 @@ public class AccountService {
 
     @Autowired
     private JWTUtils jwtUtils;
+
+    public Map<String, String> getCleanAccount(String accountNo) throws IOException {
+        String data = storeService.readData();
+        if(data.isEmpty()){
+            throw new ResponseStatusException(NOT_FOUND, "Accounts does not exist");
+        }
+        Map<String, Map<String, Object>> map = storeService.convertToMap(data);
+        Map<String, Object> account = map.get("accounts");
+        if(account.containsKey(accountNo)){
+            Object acc = account.get(accountNo);
+            ObjectMapper mapper = new ObjectMapper();
+            Account account1 =  mapper.convertValue(acc, Account.class);
+            return new LinkedHashMap<>(){{
+                put("accountNumber", account1.getAccountNumber());
+                put("accountName", account1.getAccountName());
+                put("balance", account1.getBalance().toString());
+            }};
+        }
+        throw new ResponseStatusException(NOT_FOUND, "Account not found");
+    }
 
     public Account getAccount(String accountNo) throws IOException {
         String data = storeService.readData();

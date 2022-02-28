@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -31,8 +32,8 @@ public class AccountController {
     @GetMapping("/account_info/{account_number}")
     public ResponseEntity<?> getAccountNumber(@PathVariable String account_number){
         try {
-            Account account = accountService.getAccount(account_number);
-            return new ResponseEntity<>(new CustomResponseWithData<Account>(200, true, "successful", account), HttpStatus.valueOf(200));
+            Map<String, String> account = accountService.getCleanAccount(account_number);
+            return new ResponseEntity<>(new CustomResponseWithData<>(200, true, "successful", account), HttpStatus.valueOf(200));
         }catch (IOException ex){
             return new ResponseEntity<>(new CustomResponse(500, false, "An error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
