@@ -44,8 +44,15 @@ public class AccountController {
     }
     @PostMapping("/create_account")
     public ResponseEntity<CustomResponse> create(@Valid @RequestBody CreateRequest request){
-        boolean result = accountService.createAccount(request);
-        return new ResponseEntity<>(new CustomResponse(200,result,"successfully created"), HttpStatus.OK);
+        try{
+            boolean result = accountService.createAccount(request);
+            if(result){
+                return new ResponseEntity<>(new CustomResponse(200,true,"successfully created"), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new CustomResponse(500,false,"An error Occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (ResponseStatusException e){
+            return new ResponseEntity<>(new CustomResponse(e.getStatus().value(),false,e.getMessage()), e.getStatus());
+        }
     }
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) throws IOException {

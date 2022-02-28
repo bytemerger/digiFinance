@@ -7,6 +7,7 @@ import com.bank.demo.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -88,10 +86,18 @@ public class AccountService {
                 return true;
             }
             Map<String, Map<String, Object>> map = storeService.convertToMap(data);
+            Map<String, Object> accountMap = map.get("accounts");
+            ObjectMapper mapper = new ObjectMapper();
+            for (Object accObj : accountMap.values())
+                if((mapper.convertValue(accObj, Account.class).getAccountName()).equalsIgnoreCase(request.getAccountName()))
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Account with name "+ request.getAccountName() +" already exists");
             map.get("accounts").put(account.getAccountNumber(), account);
             storeService.writeData(map);
             return true;
-        }catch (Exception e){
+        }catch (ResponseStatusException e){
+            throw e;
+        }
+        catch (Exception e){
             return false;
         }
     }
