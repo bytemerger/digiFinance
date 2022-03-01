@@ -1,10 +1,10 @@
 {
   "accounts" : {
-    "7620562408" : {
-      "accountName" : "Chuks Ifeanyi",
-      "accountNumber" : "7620562408",
+    "0150254002" : {
+      "accountName" : "Adamu Cheta",
+      "accountNumber" : "0150254002",
       "balance" : 800.0,
-      "password" : "$2a$10$Rmd1JRPJpPGWCyr.Yh2w2.4MnZFxvIYH4FpVgWTErVWbnY25aapxq"
+      "password" : "$2a$10$Rv.iPawCaRPg4DU7qNhEXeUI8lQBnvQcgU3WIU01xMBaTIVw2F67u"
     }
   }
 }

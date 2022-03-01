@@ -89,6 +89,9 @@ public class TransactionService {
         String db = storeService.readData();
         Map<String, Map<String, Object>> dbMap = storeService.convertToMap(db);
         Map<String, Object> transactions = dbMap.get("transactions");
+        if(transactions == null){
+            throw new ResponseStatusException(NOT_FOUND, "Account " + accountNumber + " does not have any transactions");
+        }
         if (transactions.containsKey(accountNumber)) {
             ObjectMapper mapper = new ObjectMapper();
             TransactionList transactionList = mapper.convertValue(transactions.get(accountNumber), TransactionList.class);
