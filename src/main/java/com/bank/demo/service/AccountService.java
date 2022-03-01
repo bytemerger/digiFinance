@@ -64,6 +64,9 @@ public class AccountService {
         }
         Map<String, Map<String, Object>> map = storeService.convertToMap(data);
         Map<String, Object> account = map.get("accounts");
+        if(account == null){
+            throw new ResponseStatusException(NOT_FOUND, "Account not found");
+        }
         if(account.containsKey(accountNo)){
             Object acc = account.get(accountNo);
             ObjectMapper mapper = new ObjectMapper();
@@ -78,15 +81,13 @@ public class AccountService {
         try{
             String data = storeService.readData();
             if(data.isEmpty()){
-                Map<String, Map<String, Object>> db = new HashMap<>();
-                db.put("accounts", new HashMap<>(){{
-                    put(account.getAccountNumber(), account);
-                }});
-                storeService.writeData(db);
-                return true;
+                return instantiateDB(account);
             }
             Map<String, Map<String, Object>> map = storeService.convertToMap(data);
             Map<String, Object> accountMap = map.get("accounts");
+            if(accountMap == null){
+                return instantiateDB(account);
+            }
             ObjectMapper mapper = new ObjectMapper();
             for (Object accObj : accountMap.values())
                 if((mapper.convertValue(accObj, Account.class).getAccountName()).equalsIgnoreCase(request.getAccountName()))
@@ -124,5 +125,13 @@ public class AccountService {
         }};
         String token = jwtUtils.createToken(account.getAccountNumber(), claims);
         return token;
+    }
+    private boolean instantiateDB(Account account) throws IOException {
+        Map<String, Map<String, Object>> db = new HashMap<>();
+        db.put("accounts", new HashMap<>(){{
+            put(account.getAccountNumber(), account);
+        }});
+        storeService.writeData(db);
+        return true;
     }
 }

@@ -1,0 +1,10 @@
+{
+  "accounts" : {
+    "8103538302" : {
+      "accountName" : "Chuks Ifeanyi",
+      "accountNumber" : "8103538302",
+      "balance" : 800.0,
+      "password" : "$2a$10$O6ptxBjbdYx/ONi08YYSLu1pL6amdhTeWDAVUBkgR12KPMBdvxWty"
+    }
+  }
+}
