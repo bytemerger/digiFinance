@@ -309,4 +309,3 @@ URL: localhost:8080/api/v1/withdrawal
 
 ---
 [Back to top](#digicore)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2022-03-01 08:53:22 by [docgen](https://github.com/thedevsaddam/docgen)
