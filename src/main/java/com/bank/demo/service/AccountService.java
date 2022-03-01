@@ -74,7 +74,7 @@ public class AccountService {
         }
         throw new ResponseStatusException(NOT_FOUND, "Account not found");
     }
-    public boolean createAccount(CreateRequest request){
+    public String createAccount(CreateRequest request) throws IOException {
         request.setAccountPassword(passwordEncoder.encode(request.getAccountPassword()));
         String accountNo = generateRandomNumbers(10);
         Account account = new Account(request.getAccountName(), accountNo, request.getInitialDeposit(), request.getAccountPassword());
@@ -94,12 +94,9 @@ public class AccountService {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Account with name "+ request.getAccountName() +" already exists");
             map.get("accounts").put(account.getAccountNumber(), account);
             storeService.writeData(map);
-            return true;
+            return account.getAccountNumber();
         }catch (ResponseStatusException e){
             throw e;
-        }
-        catch (Exception e){
-            return false;
         }
     }
 
@@ -126,12 +123,12 @@ public class AccountService {
         String token = jwtUtils.createToken(account.getAccountNumber(), claims);
         return token;
     }
-    private boolean instantiateDB(Account account) throws IOException {
+    private String instantiateDB(Account account) throws IOException {
         Map<String, Map<String, Object>> db = new HashMap<>();
         db.put("accounts", new HashMap<>(){{
             put(account.getAccountNumber(), account);
         }});
         storeService.writeData(db);
-        return true;
+        return account.getAccountNumber();
     }
 }

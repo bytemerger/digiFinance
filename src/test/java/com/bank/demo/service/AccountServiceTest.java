@@ -74,7 +74,7 @@ class AccountServiceTest {
         request.setAccountPassword("test");
         request.setInitialDeposit(400.00);
         given(storeService.readData()).willReturn("");
-        assertTrue(accountService.createAccount(request));
+        assertEquals(accountService.createAccount(request).length(),10);
     }
 
     @Test
@@ -101,10 +101,10 @@ class AccountServiceTest {
         given(storeService.readData()).willReturn("string");
         given(storeService.convertToMap("string")).willReturn(new HashMap<>(){{
             put("accounts",new HashMap<>(){{
-                put("123456798", new Account("new user","123456798",400.00,"test"));
+                put("1234567980", new Account("new user","1234567980",400.00,"test"));
             }});
         }});
-       assertTrue(accountService.createAccount(request));
+        assertEquals(accountService.createAccount(request).length(),10);
     }
     @Test
     void generateRandomNumbers() {

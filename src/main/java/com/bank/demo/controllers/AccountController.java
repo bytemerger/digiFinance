@@ -43,15 +43,16 @@ public class AccountController {
         return new ResponseEntity<>(transactionService.getAccountStatement(account_number), HttpStatus.OK);
     }
     @PostMapping("/create_account")
-    public ResponseEntity<CustomResponse> create(@Valid @RequestBody CreateRequest request){
+    public ResponseEntity<?> create(@Valid @RequestBody CreateRequest request){
         try{
-            boolean result = accountService.createAccount(request);
-            if(result){
-                return new ResponseEntity<>(new CustomResponse(200,true,"successfully created"), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(new CustomResponse(500,false,"An error Occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+            String result = accountService.createAccount(request);
+            return new ResponseEntity<>(new CustomResponseWithData<Map<String,String>>(200,true,"successfully created",new HashMap<>(){{
+                put("accountNumber",result);
+            }}), HttpStatus.OK);
         }catch (ResponseStatusException e){
             return new ResponseEntity<>(new CustomResponse(e.getStatus().value(),false,e.getMessage()), e.getStatus());
+        } catch (IOException e) {
+            return new ResponseEntity<>(new CustomResponse(500,false,"An error Occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @PostMapping("/login")
